@@ -1,0 +1,55 @@
+import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+// Import model
+import 'models/user_model.dart';
+import 'models/produk_model.dart';
+import 'models/cart_item_model.dart';
+
+// Import halaman
+import 'pages/home_page.dart';
+import 'pages/login_page.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Inisialisasi Hive
+  await Hive.initFlutter();
+
+  // Registrasi adapter (pastikan typeId sesuai dengan masing-masing model)
+  if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(ProdukModelAdapter());
+  if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(CartItemModelAdapter());
+  if (!Hive.isAdapterRegistered(2)) Hive.registerAdapter(UserModelAdapter());
+
+  // Buka semua box Hive
+  await Hive.openBox<UserModel>('userBox');
+  await Hive.openBox<ProdukModel>('productBox');
+  await Hive.openBox<CartItemModel>('cartBox');
+  await Hive.openBox('sessionBox');
+
+  // Ambil box session untuk cek status login
+  final sessionBox = Hive.box('sessionBox');
+  final bool isLoggedIn = sessionBox.get('isLoggedIn', defaultValue: false);
+
+  // Jalankan aplikasi
+  runApp(MyApp(isLoggedIn: isLoggedIn));
+}
+
+class MyApp extends StatelessWidget {
+  final bool isLoggedIn;
+  const MyApp({super.key, required this.isLoggedIn});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Sepatu Store',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
+        useMaterial3: true,
+      ),
+      // Kalau sudah login, langsung ke HomePage, kalau belum ke LoginPage
+      home: isLoggedIn ? const HomePage() : const LoginPage(),
+    );
+  }
+}
