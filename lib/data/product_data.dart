@@ -8,7 +8,7 @@ final List<ProdukModel> initialProducts = [
     deskripsi: "Ikon klasik yang memulai debutnya pada tahun 1982. Air Force 1 '07 menghadirkan fitur-fitur favorit: overlay yang dijahit rapi, sentuhan akhir yang berani, dan bantalan Nike Air yang memberikan kenyamanan sepanjang hari.",
     tipe: "Nike",
     size: ["39", "40", "41", "42", "43"],
-    imagePath: "assets/images/Nike_Air_Force_1.jpg",
+    imagePath: "assets/images/Nike_Air_Force_1.jpg", // Pastikan file ini ada
   ),
   ProdukModel(
     nama: "Nike Zoom Vomero 5",
@@ -19,12 +19,12 @@ final List<ProdukModel> initialProducts = [
     imagePath: "assets/images/nike_vomero_5.jpeg",
   ),
   ProdukModel(
-    nama: "Nike Dunk Low Retro", // [NEW]
+    nama: "Nike Dunk Low Retro",
     harga: 1549000,
     deskripsi: "Didesain untuk lapangan namun dibawa ke jalanan, ikon basket tahun 80-an ini kembali dengan detail klasik dan gaya hoops retro. Kerah low-cut yang empuk memungkinkan Anda membawa permainan ke mana saja dengan nyaman.",
     tipe: "Nike",
     size: ["38", "39", "40", "41", "42", "43"],
-    imagePath: "assets/images/nike_dunk_low.jpeg", // Pastikan gambar ini ada
+    imagePath: "assets/images/nike_dunk_low.jpeg",
   ),
 
   // ================= ADIDAS =================
@@ -42,15 +42,16 @@ final List<ProdukModel> initialProducts = [
     deskripsi: "Rasakan energi tak terbatas dengan Ultraboost 5. Dilengkapi teknologi Light BOOST V2 yang lebih ringan dan responsif, serta upper Primeknit+ yang adaptif memeluk kaki Anda.",
     tipe: "Adidas",
     size: ["40", "41", "42", "43", "44"],
-    imagePath: "assets/images/adidas_ultraboost_5.jpg",
+    // [FIXED] Mengubah nama file agar sesuai dengan file asli (kapital A dan U)
+    imagePath: "assets/images/Adidas_Ultraboost_5.jpg", 
   ),
   ProdukModel(
-    nama: "Adidas Gazelle", // [NEW]
+    nama: "Adidas Gazelle",
     harga: 1700000,
     deskripsi: "Simbol gaya klasik yang tak pernah pudar. Sepatu low-profile ini menampilkan upper nubuck premium dan detail 3-Stripes yang kontras, menawarkan kestabilan fashion streetwear sejak tahun 60-an.",
     tipe: "Adidas",
     size: ["36", "37", "38", "39", "40", "41"],
-    imagePath: "assets/images/adidas_gazelle.jpeg", // Pastikan gambar ini ada
+    imagePath: "assets/images/adidas_gazelle.jpeg",
   ),
 
   // ================= PUMA =================
@@ -71,11 +72,11 @@ final List<ProdukModel> initialProducts = [
     imagePath: "assets/images/puma_palermo.jpeg",
   ),
   ProdukModel(
-    nama: "Puma RS-X Efekt", // [NEW]
+    nama: "Puma RS-X Efekt",
     harga: 1799000,
     deskripsi: "Desain retro masa depan kembali dengan estetika progresif. Bagian atas jaring dengan lapisan suede dan nubuck menciptakan tampilan bersudut yang disruptif, siap untuk memamerkan gaya unik Anda.",
     tipe: "Puma",
     size: ["40", "41", "42", "43", "44"],
-    imagePath: "assets/images/puma_rs_x.jpeg", // Pastikan gambar ini ada
+    imagePath: "assets/images/puma_rs_x.jpeg",
   ),
 ];

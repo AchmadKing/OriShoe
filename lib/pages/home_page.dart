@@ -152,7 +152,7 @@ class _HomePageState extends State<HomePage> {
                     crossAxisCount: 2,
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,
-                    childAspectRatio: 0.68,
+                    childAspectRatio: 0.60, // [FIX] Ubah rasio agar kartu lebih tinggi (sebelumnya 0.68)
                   ),
                   itemCount: products.length,
                   itemBuilder: (context, index) {
@@ -355,29 +355,39 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // [FIX] Mengubah flex agar bagian bawah (teks) mendapat ruang lebih banyak
             Expanded(
-              flex: 5,
+              flex: 3, // Sebelumnya 5
               child: ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                 child: Image.asset(product.imagePath, fit: BoxFit.cover, width: double.infinity),
               ),
             ),
             Expanded(
-              flex: 2,
+              flex: 2, // Sebelumnya 2 (Rasio 3:2 lebih seimbang daripada 5:2)
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(product.nama,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            color: Colors.black,
-                            letterSpacing: -0.5),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis),
+                    // [MODIFIED] Menggunakan FittedBox agar teks mengecil jika kepanjangan
+                    SizedBox(
+                      height: 40, // Batasan tinggi untuk 2 baris
+                      width: double.infinity,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          product.nama,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: Colors.black,
+                              letterSpacing: -0.5),
+                        ),
+                      ),
+                    ),
                     FutureBuilder<String>(
                       future: CurrencyService.instance.convertAndFormat(
                         product.harga.toDouble(),
