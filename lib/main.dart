@@ -16,7 +16,7 @@ Future<void> main() async {
   // Inisialisasi Hive
   await Hive.initFlutter();
 
-  // Registrasi adapter (pastikan typeId sesuai dengan masing-masing model)
+  // Registrasi adapter
   if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(ProdukModelAdapter());
   if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(CartItemModelAdapter());
   if (!Hive.isAdapterRegistered(2)) Hive.registerAdapter(UserModelAdapter());
@@ -29,7 +29,9 @@ Future<void> main() async {
 
   // Ambil box session untuk cek status login
   final sessionBox = Hive.box('sessionBox');
-  final bool isLoggedIn = sessionBox.get('isLoggedIn', defaultValue: false);
+  
+  // PERBAIKAN: Cek currentUser bukan isLoggedIn
+  final bool isLoggedIn = sessionBox.get('currentUser') != null;
 
   // Jalankan aplikasi
   runApp(MyApp(isLoggedIn: isLoggedIn));
@@ -48,7 +50,6 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
       ),
-      // Kalau sudah login, langsung ke HomePage, kalau belum ke LoginPage
       home: isLoggedIn ? const HomePage() : const LoginPage(),
     );
   }

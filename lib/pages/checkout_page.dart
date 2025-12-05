@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/cart_item_model.dart';
 import '../hive_boxes/cart_box.dart';
 import '../services/currency_service.dart';
-import '../services/notification_service.dart'; // ✅ Tambahkan ini
+import '../services/notification_service.dart';
 
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({Key? key}) : super(key: key);
@@ -16,7 +16,7 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   late Box<CartItemModel> cartBox;
   final currencyService = CurrencyService.instance;
-  final notificationService = NotificationService(); // ✅ Buat instance
+  final notificationService = NotificationService();
   String currentCurrency = 'IDR';
   bool isLoading = true;
 
@@ -25,7 +25,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     super.initState();
     cartBox = CartBox.getCartItems();
     _loadCurrencyPreference();
-    notificationService.init(); // ✅ Inisialisasi notifikasi
+    notificationService.init();
   }
 
   Future<void> _loadCurrencyPreference() async {
@@ -42,7 +42,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
     double total = 0;
     for (var item in cartBox.values) {
       double subtotal = item.harga * item.quantity;
-      total += currencyService.convert(subtotal, 'IDR', currentCurrency);
+      // PERBAIKAN: Langsung jumlahkan IDR, konversi dilakukan saat display
+      total += subtotal; 
     }
     return total;
   }
@@ -59,9 +60,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       return;
     }
 
-    // Ambil waktu lokal device
     final now = DateTime.now();
-    // Hitung zona waktu lain
     final wib = now;
     final wita = now.add(const Duration(hours: 1));
     final wit = now.add(const Duration(hours: 2));
@@ -70,13 +69,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
     final formatTime = (DateTime dt) =>
         "${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}";
 
-    // ✅ Kirim notifikasi sistem (bukan snackbar)
     await notificationService.showNotification(
       title: 'Purchase Successful',
       body: 'Your purchase has been completed successfully.',
     );
 
-    // ✅ Munculkan pop-up dialog pembayaran berhasil
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
