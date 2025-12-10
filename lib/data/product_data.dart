@@ -8,7 +8,7 @@ final List<ProdukModel> initialProducts = [
     deskripsi: "Ikon klasik yang memulai debutnya pada tahun 1982. Air Force 1 '07 menghadirkan fitur-fitur favorit: overlay yang dijahit rapi, sentuhan akhir yang berani, dan bantalan Nike Air yang memberikan kenyamanan sepanjang hari.",
     tipe: "Nike",
     size: ["39", "40", "41", "42", "43"],
-    imagePath: "assets/images/Nike_Air_Force_1.jpg", // Pastikan file ini ada
+    imagePath: "assets/images/Nike_Air_Force_1.jpg",
   ),
   ProdukModel(
     nama: "Nike Zoom Vomero 5",

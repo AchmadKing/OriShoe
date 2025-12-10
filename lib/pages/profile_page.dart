@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart'; // Import Geolocator
 import 'package:geocoding/geocoding.dart';   // Import Geocoding
 import '../models/user_model.dart';
 import '../hive_boxes/session_box.dart';
+
+// Import Halaman
 import 'login_page.dart';
 import 'cart_page.dart';
 import 'home_page.dart';
+import 'history_page.dart'; // [BARU] Import halaman riwayat
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -137,6 +140,7 @@ class _ProfilePageState extends State<ProfilePage> {
     userBox = Hive.box<UserModel>('userBox');
     final currentUser = await SessionBox.getCurrentUser();
     if (currentUser != null) {
+      // ignore: cast_nullable_to_non_nullable
       final user = userBox.values.firstWhere(
         (u) => u.username == currentUser,
         orElse: () => UserModel(username: 'Guest', password: '', email: ''),
@@ -149,7 +153,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> logout(BuildContext context) async {
-    // ... (Logika logout sama seperti sebelumnya, tidak diubah)
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => Dialog(
@@ -312,8 +315,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     
                     const SizedBox(height: 32),
 
-                    // --- FITUR BARU: LBS Currency Button ---
-                    // Tombol ini diletakkan di atas Saran dan Kesan sesuai permintaan
+                    // --- FITUR LBS Currency Button ---
                     SizedBox(
                       width: double.infinity,
                       height: 50,
@@ -331,6 +333,46 @@ class _ProfilePageState extends State<ProfilePage> {
                           elevation: 4,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 20),
+
+                    // --- [BARU] FITUR RIWAYAT PEMBELIAN ---
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                        ],
+                        border: Border.all(color: Colors.grey.shade100),
+                      ),
+                      child: ListTile(
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[50], 
+                            shape: BoxShape.circle
+                          ),
+                          child: const Icon(Icons.history, color: Colors.blue),
+                        ),
+                        title: const Text(
+                          "Riwayat Pembelian", 
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
+                        ),
+                        subtitle: const Text(
+                          "Lihat riwayat transaksi anda", 
+                          style: TextStyle(color: Colors.grey, fontSize: 12)
+                        ),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                        onTap: () {
+                          // Navigasi ke Halaman Riwayat
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const HistoryPage()),
+                          );
+                        },
                       ),
                     ),
                     // ----------------------------------------
@@ -426,8 +468,8 @@ class _ProfilePageState extends State<ProfilePage> {
               Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14, letterSpacing: -0.3)),
             ],
           ],
-        ),
       ),
+        ),
     );
   }
 }

@@ -2,10 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Untuk fitur copy paste
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+// Imports Model
 import '../models/cart_item_model.dart';
+import '../models/transaction_model.dart'; // [BARU] Import Transaction Model
+
+// Imports Service
 import '../services/currency_service.dart';
-import '../services/bank_service.dart'; // Pastikan file ini ada
-import '../services/notification_service.dart'; // Pastikan file ini ada
+import '../services/bank_service.dart'; 
+import '../services/notification_service.dart';
+
+// Imports Halaman Lain
 import 'home_page.dart';
 import 'profile_page.dart';
 
@@ -74,7 +81,6 @@ class _CartPageState extends State<CartPage> {
   }
 
   void _deleteItem(int index) {
-    // ... (Kode delete item sama seperti sebelumnya)
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -313,10 +319,32 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  // 4. Logika Final Pembayaran (Notifikasi & Clear Cart)
+  // 4. Logika Final Pembayaran (Notifikasi & Clear Cart & Simpan Riwayat)
   void _processPayment() async {
+    // [BARU] A. Persiapkan Data Riwayat
+    final sessionBox = Hive.box('sessionBox');
+    final currentUser = sessionBox.get('currentUser'); // Ambil data user login
+    final transactionBox = Hive.box<TransactionModel>('transactionBox');
+    
+    // Copy item cart ke list baru agar tidak hilang saat cart di-clear
+    final List<CartItemModel> purchasedItems = cartBox.values.toList();
+    final double totalPaid = getTotalPrice();
+
+    // [BARU] B. Simpan ke Riwayat Transaksi
+    if (currentUser != null && purchasedItems.isNotEmpty) {
+      final newTransaction = TransactionModel(
+        id: DateTime.now().millisecondsSinceEpoch.toString(), // ID unik dari waktu
+        username: (currentUser is String) ? currentUser : (currentUser['username'] ?? 'Guest'),
+        items: purchasedItems,
+        totalAmount: totalPaid,
+        timestamp: DateTime.now(),
+      );
+
+      await transactionBox.add(newTransaction);
+    }
+
     // Tutup Dialog Pop-up
-    Navigator.pop(context);
+    if (mounted) Navigator.pop(context);
 
     // Tampilkan Notifikasi
     await _notificationService.showNotification(
@@ -325,32 +353,34 @@ class _CartPageState extends State<CartPage> {
     );
 
     // Kosongkan Keranjang
-    cartBox.clear();
+    await cartBox.clear();
 
     // Tampilkan Dialog Sukses Sederhana
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Column(
-          children: [
-            Icon(Icons.check_circle, color: Colors.green, size: 60),
-            SizedBox(height: 10),
-            Text("Success!", style: TextStyle(fontWeight: FontWeight.bold)),
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Column(
+            children: [
+              Icon(Icons.check_circle, color: Colors.green, size: 60),
+              SizedBox(height: 10),
+              Text("Success!", style: TextStyle(fontWeight: FontWeight.bold)),
+            ],
+          ),
+          content: const Text("Pesanan Anda sedang diproses dan tersimpan di Riwayat.", textAlign: TextAlign.center),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Tutup dialog sukses
+                // Kembali ke halaman home
+                _onItemTapped(1); 
+              },
+              child: const Text("OK", style: TextStyle(color: Colors.black)),
+            )
           ],
         ),
-        content: const Text("Pesanan Anda sedang diproses.", textAlign: TextAlign.center),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Tutup dialog sukses
-              // Kembali ke halaman home (opsional)
-              _onItemTapped(1); 
-            },
-            child: const Text("OK", style: TextStyle(color: Colors.black)),
-          )
-        ],
-      ),
-    );
+      );
+    }
   }
 
   void _onItemTapped(int index) {
@@ -542,7 +572,7 @@ class _CartPageState extends State<CartPage> {
                     ),
                     const SizedBox(height: 12),
                     ElevatedButton(
-                      onPressed: _handleCheckout, // [UBAH] Panggil fungsi baru ini
+                      onPressed: _handleCheckout,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
                         minimumSize: const Size(double.infinity, 55),
